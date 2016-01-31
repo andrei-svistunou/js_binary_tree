@@ -11,13 +11,12 @@ class BinaryTree {
 			return true;
 		}
 		var current = this.root;
-		var parent = current;
+		var parent;
 		while(current) {
+			parent = current;
 			if (data < current.data) {
-				parent = current;
 				current = current.left;
 			} else if (data > current.data) {
-				parent = current;
 				current = current.right;
 			} else {
 				return false;
@@ -59,7 +58,7 @@ class BinaryTree {
 				parent = current;
 				current = current.right;
 			}else{
-				if(!current.left && !current.right){    //0 children
+				if(!current.left && !current.right){
 					if(data > parent.data){
 						parent.right = null;
 					}else if(data < parent.data){
@@ -67,48 +66,53 @@ class BinaryTree {
 					}else {
 						this.root = null;
 					}
-				}else if(current.left || current.right){   //1 child
+				}else if (current.left && current.right){
+					parent = current;
+					current = current.right;
+					var min, parentMin;
+					while(current){
+						parentMin = min;
+						min = current;
+						current = current.left;
+					}
+					parent.data = min.data;
+					if(parentMin === undefined){
+						parent.right = null;
+					}else{
+						parentMin.left = min.right || null;
+					}
+				}else{
 					var child = current.left || current.right;
 					if(data > parent.data){
 						parent.right = child;
 					}else{
 						parent.left = child;
 					}
-				}else{              	                   //2 children
-					parent = current;
-					current = current.right;
-					var par;
-					var curMin;
-					while(current){
-						par = curMin;
-						curMin = current;
-						current = current.left;
-					}
-					parent.data = curMin.data;
-					par.left = curMin.right || null;
 				}
 				return true;
 			}
-		}
+		}return false;
 	}
 
 	size() {
 		if(!this.root){
 			return 0;
 		}else{
-			return this.counted(this.root);
+			return this.calc(this.root);
 		}
 	}
 
 	isEmpty() {
 		if(!this.root)
 			return true;
-		else return false;
+		else
+			return false;
 	}
-	counted(node){
+	calc(node){
 		if(!node){
 			return 0;
 		}
-		return (this.counted(node.left) + this.counted(node.right) + 1);
+		return (this.calc(node.left) + this.calc(node.right) + 1);
 	}
+
 }
